@@ -1,14 +1,30 @@
+#Equipo naranja
+#DRIVE : https://drive.google.com/file/d/1DGuS4kzwXVUGtvNd_eBgLDaY2HT4mjHT/view?usp=drive_link
 
+
+import os
+
+# ==========================
 # Archivo donde están incrustados todos los datos
 ARCHIVO = "naranja.mpeg"
 
-# Aquí se guardan las regiones del archivo que ya fueron usadas
-# para que no se empalmen las extracciones
+# Carpeta donde se van a guardar todos los archivos extraídos
+CARPETA_SALIDA = "extraidos"
+
+# Si la carpeta no existe, se crea
+if not os.path.exists(CARPETA_SALIDA):
+    os.mkdir(CARPETA_SALIDA)
+
+# Lista para guardar las regiones del archivo que ya se usaron
+# Esto evita que un archivo se empalme con otro
 ocupados = []
 
 
 def esta_encimado(ini, fin):
-    # Revisa si una región ya fue usada antes
+    """
+    Verifica si el rango (ini, fin) ya fue usado antes
+    Sirve para no extraer dos archivos desde la misma zona
+    """
     for a, b in ocupados:
         if ini >= a and fin <= b:
             return True
@@ -16,16 +32,16 @@ def esta_encimado(ini, fin):
 
 
 # ==========================
-# JPG 
+# EXTRACCIÓN DE IMÁGENES JPG
 def extraer_jpg():
-    # Leer todo el archivo en binario
+    # Abrimos el archivo principal en binario
     with open(ARCHIVO, "rb") as f:
         data = f.read()
 
     pos = 0
     contador = 0
 
-    # Posibles encabezados reales de imágenes JPG
+    # Encabezados válidos de archivos JPG reales
     headers_jpg = [
         b"\xFF\xD8\xFF\xE0",  # JFIF
         b"\xFF\xD8\xFF\xE1",  # EXIF
@@ -34,12 +50,12 @@ def extraer_jpg():
         b"\xFF\xD8\xFF\xEE",
     ]
 
-    # Buscar imágenes mientras haya datos
+    # Recorremos todo el archivo buscando imágenes
     while pos < len(data):
         ini = -1
         header_encontrado = None
 
-        # Buscar el JPG más cercano desde la posición actual
+        # Buscamos el encabezado JPG más cercano
         for h in headers_jpg:
             p = data.find(h, pos)
             if p != -1 and (ini == -1 or p < ini):
@@ -49,7 +65,7 @@ def extraer_jpg():
         if ini == -1:
             break
 
-        # Buscar el final del JPG (FFD9)
+        # Buscamos el final del JPG (FFD9)
         fin = ini + len(header_encontrado)
         while True:
             fin = data.find(b"\xFF\xD9", fin)
@@ -58,18 +74,9 @@ def extraer_jpg():
                 break
 
             fin += 2
+            break
 
-            # Verificar que no empiece otro JPG antes
-            siguiente = len(data)
-            for h in headers_jpg:
-                t = data.find(h, ini + len(header_encontrado))
-                if t != -1 and t < siguiente:
-                    siguiente = t
-
-            if siguiente >= fin:
-                break
-
-        # Validar que sea una imagen real
+        # Validamos que el bloque encontrado sea una imagen válida
         if fin != -1 and fin > ini:
             bloque = data[ini:fin]
             if (
@@ -78,7 +85,8 @@ def extraer_jpg():
                 not esta_encimado(ini, fin)
             ):
                 contador += 1
-                with open(f"{contador}.jpg", "wb") as out:
+                ruta = os.path.join(CARPETA_SALIDA, f"{contador}.jpg")
+                with open(ruta, "wb") as out:
                     out.write(bloque)
 
                 ocupados.append((ini, fin))
@@ -88,11 +96,12 @@ def extraer_jpg():
 
 
 # ==========================
-# MP3
+# EXTRACCIÓN DE AUDIO MP3
 def extraer_mp3():
     with open(ARCHIVO, "rb") as f:
         data = f.read()
 
+    # Buscamos posibles firmas de MP3
     inicio = None
     for sig in (b"ID3", b"\xFF\xFB", b"\xFF\xF3", b"\xFF\xF2"):
         p = data.find(sig)
@@ -103,11 +112,12 @@ def extraer_mp3():
     if inicio is None:
         return
 
+    #  inicios de otros archivos para cortar el MP3
     cortes = [
-        b"\xFF\xD8\xFF",
-        b"OggS",
-        b"\x00\x00\x20\x74",
-        b"\x50\x4B\x03\x04"
+        b"\xFF\xD8\xFF",      # JPG
+        b"OggS",              # OGV
+        b"\x00\x00\x20\x74",  # MP4
+        b"\x50\x4B\x03\x04"   # ZIP
     ]
 
     fin = len(data)
@@ -117,14 +127,15 @@ def extraer_mp3():
             fin = p
 
     if fin - inicio > 30000 and not esta_encimado(inicio, fin):
-        with open("3.mp3", "wb") as out:
+        ruta = os.path.join(CARPETA_SALIDA, "3.mp3")
+        with open(ruta, "wb") as out:
             out.write(data[inicio:fin])
         ocupados.append((inicio, fin))
         print("[✔] MP3")
 
 
 # ==========================
-# OGV (2 videos)
+# EXTRACCIÓN DE VIDEOS OGV 
 def extraer_ogv():
     with open(ARCHIVO, "rb") as f:
         data = f.read()
@@ -151,12 +162,13 @@ def extraer_ogv():
             total = sum(data[fin+27:fin+27+segs])
             fin += header + total
 
-            # Flag de fin de stream
+            # Bandera de fin de stream
             if data[fin - total - header + 5] & 0x04:
                 break
 
         if fin - ini > 200000 and not esta_encimado(ini, fin):
-            with open(f"{3 + contador}.ogv", "wb") as out:
+            ruta = os.path.join(CARPETA_SALIDA, f"{3 + contador}.ogv")
+            with open(ruta, "wb") as out:
                 out.write(data[ini:fin])
             ocupados.append((ini, fin))
             print(f"[✔] OGV #{contador}")
@@ -166,7 +178,7 @@ def extraer_ogv():
 
 
 # ==========================
-# MP4
+# EXTRACCIÓN DE VIDEO MP4
 def extraer_mp4():
     with open(ARCHIVO, "rb") as f:
         data = f.read()
@@ -184,14 +196,15 @@ def extraer_mp4():
             fin = p
 
     if fin - ini > 100000 and not esta_encimado(ini, fin):
-        with open("6.mp4", "wb") as out:
+        ruta = os.path.join(CARPETA_SALIDA, "6.mp4")
+        with open(ruta, "wb") as out:
             out.write(data[ini:fin])
         ocupados.append((ini, fin))
         print("[✔] MP4")
 
 
 # ==========================
-# ZIP
+# EXTRACCIÓN DE ZIP
 def extraer_zip():
     with open(ARCHIVO, "rb") as f:
         data = f.read()
@@ -204,14 +217,15 @@ def extraer_zip():
     fin = eocd + 22 if eocd != -1 else len(data)
 
     if not esta_encimado(ini, fin):
-        with open("7.zip", "wb") as out:
+        ruta = os.path.join(CARPETA_SALIDA, "7.zip")
+        with open(ruta, "wb") as out:
             out.write(data[ini:fin])
         ocupados.append((ini, fin))
         print("[✔] ZIP")
 
 
 # ==========================
-# EJECUCIÓN
+# EJECUCIÓN DEL PROGRAMA
 extraer_jpg()
 extraer_mp3()
 extraer_ogv()
