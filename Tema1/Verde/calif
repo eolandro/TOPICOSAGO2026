@@ -1,0 +1,72 @@
+Equipo:
+- NoControl: '22590040'
+  Nombre: Abelardo Garduño Fuertes
+- NoControl: '22590068'
+  Nombre: Alejandro Perez Piña
+- NoControl: '22590049'
+  Nombre: Brandon Ismael Trejo Hernandez
+Calificacion: 99
+Informe:
+- Actividad: "Nombre: Debugger\nDescripción: Dos ejercicios cuyo objetivo es adquirir
+    las habilidades para usar un depurador, un editor hexadecimal y modificar ejecutables\n\
+    Notas: \n= El primer ejercicio es sobre anatomia de los archivos binarios\n= El
+    segundo es sobre modificacion de ejecutables con un depurador\n= En ambos casos
+    el código fuente del software debe ser entregado\n= Bajo ninguna circunstancia
+    de deben entregar ejecutables\nElementos Clave: Magic numbers, Depuradores y ejecutables.\n\
+    SEAES_CACEI: CD1-3, AE1,Compromiso con responsabilidad Social."
+  Reactivos:
+  - ID: R001
+    Ponderacion: 10
+    Reactivo: "Descripción: \nDetectar en un archivo gigante los diferentes archivos
+      que se encuentran escondidos.\n= Todos los archivos tiene encabezados, (magic
+      numbers o file header) la idea es buscar el patron de distintios tipos de archivo
+      en uno gigante\n= Tambien existen finales de archivos caracteriscos, lo cual
+      ayuda a delimitar la busqueda\nRestricciones: Deben programar su propia herramienta
+      de detección y extracción."
+    Cumplio: Si
+  - ID: R002
+    Ponderacion: 20
+    Reactivo: "Descripción: \nUna aplicación crítica antigua (Legacy) pide un \"Serial
+      Key\" para funcionar. La empresa ya no existe y no hay soporte, pero la producción
+      depende de este software. Se necesita un parche (crack) ético para seguir operando.\n\
+      Usando un depurador modifica un salto para pasar la validación. \nDesarrolla
+      un programa en python que cree el ejecutable parchado a partir del original.\n\
+      \nPasos a Seguir\n- Abrir el binario en el depurador (Debugger).\n- Rastrear
+      las cadenas de texto (Strings) para encontrar el mensaje \"Error\" o \"Acceso\"\
+      .\n- Identificar la instrucción de comparación (CMP) y el salto condicional
+      (JE / JNE) que decide si la clave es correcta.\n- Guarda el ejecutable modificado.\n\
+      - Aplica software de diferencias de archivos en el ejecutable original y en
+      el modificado.\n- Identifica el cambio y realizar un programa en python que
+      lea el ejecutable original y aplique los cambios pertinentes.\n\nRestricciones:
+      NA."
+    Cumplio: Si
+- Actividad: "Nombre: Reconstrucción del codigo fuente (Ghidra)\nDescripción: Usando
+    una herramienta deben generar el codigo fuente de un ejecutable, luego debe volverse
+    a compilar y se compara el resultado con el original.\nNotas: \n= El programa
+    ejecutable debe ser sencillo, debe generar algo como una imagen o un documento
+    json, se sugiere el uso del compilador de TCC pues es sencillo de reconstruir
+    con Ghidra.\n= En ambos casos el código fuente del software debe ser entregado\n\
+    = Bajo ninguna circunstancia de deben entregar ejecutables\nElementos Clave: Ghidra,
+    TCC, Lenguaje C.\nSEAES_CACEI: CD1-3, AE1,Compromiso con responsabilidad Social."
+  Reactivos:
+  - ID: R003
+    Ponderacion: 20
+    Reactivo: "Descripción: Documentar el proceso de como obtuvieron el codigo fuente.\n\
+      Restricciones: NA"
+    Cumplio: Si
+  - ID: R004
+    Ponderacion: 20
+    Reactivo: "Descripción: Compilar y comparar el nuevo ejecutable con su original.\n\
+      Restricciones: NA"
+    Cumplio: Si
+- Actividad: "Nombre: Parchar un ejecutable.\nDescripción: A partir de un ejecutable
+    con un validación en linea proporcionado por el docente, aplicar los conocimientos
+    previos adquiridos para saltar la validación.\nNotas: Se sugiere el uso de Lazarus
+    y python para el servicio de validación\nElementos Clave: WebApi, Lazarus, Http.\n\
+    SEAES_CACEI: CD1-3, AE1,Compromiso con responsabilidad Social."
+  Reactivos:
+  - ID: R005
+    Ponderacion: 30
+    Reactivo: "Descripción: El ejecutable debe funcionar no importa que usuario y
+      contraseña use.\nRestricciones: NA"
+    Cumplio: Si
