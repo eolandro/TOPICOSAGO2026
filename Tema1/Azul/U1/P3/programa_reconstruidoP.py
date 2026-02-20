@@ -7,7 +7,7 @@ paleta = [0, 50, 100, 150, 200, 250]
 # Inicializar semilla
 random.seed(time.time())
 
-with open("nuevo2026.ppm", "wb") as archivo:
+with open("nuevo2026_.ppm", "wb") as archivo:
     archivo.write(b"P6\n640 480\n255\n")
 
     # Img 480 x 640
