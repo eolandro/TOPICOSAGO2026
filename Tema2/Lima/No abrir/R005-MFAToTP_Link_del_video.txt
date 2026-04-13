@@ -1,0 +1,16 @@
+//////////////////////////// LINK DEL VIDEO ////////////////////////////
+
+https://www.youtube.com/watch?v=g11gTtEBz0w
+
+///////////////////////////////////////////////////////////////////////
+
+Aplicación en Python con Autenticación Multifactor (MFA)
+
+Capítulos:
+00:00 Introducción  
+00:20 Explicación del MFA  
+01:00 Registro de usuario  
+02:00 Seguridad de contraseñas  
+03:00 Uso de hashing y salt  
+05:00 Implementación completa  
+
